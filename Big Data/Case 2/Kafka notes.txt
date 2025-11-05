@@ -1,0 +1,133 @@
+Kafka notes
+
+Hent VirtualBox
+
+Installer https://yum.oracle.com/oracle-linux-isos.html release 10
+
+Username: sascha
+Password: Kode1234!
+
+Host name: Kafka
+Domain name: Kafka.virtualbox.org
+
+Root password: Password1234!
+
+Installeret via https://kafka.apache.org/quickstart
+
+Kun afbrudt af en kort Java-installation via `java -version`, yes when prompted
+
+`$ cd  Kafka/kafka_2.13_4.1.0`
+
+Tænd Kafka-server: `$ bin/kafka-server-start.sh config/server.properties`
+
+Opret topic for Arduino data: `$ bin/kafka-topics.sh --create --topic arduino-data --bootstrap-server localhost:9092`
+
+Tænd producer: `$ bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092`
+
+Tænd consumer: `$ bin/kafka-console-consumer.sh --topic arduino-data --from-beginning --bootstrap-server localhost:9092`
+
+Agenda 30/10/2025:
+
+Installer Visual Studio Code *
+Installation:
+``` 
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+sudo dnf install -y code
+``` 
+
+Installer Python * 
+(Allerede installeret på hentede image)
+
+Kig på lightweight databaseløsning (evt.PostgreSQL)
+
+PostgreSQL installation:
+```
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-10-x86_64/pgdg-redhat-repo-latest.noarch.rpm  # add postgres repo
+
+sudo dnf install -y postgresql16-server postgresql16-contrib  # install postgres
+
+sudo /usr/pgsql-16/bin/postgresql-16-setup initdb  # initialise db
+
+sudo systemctl enable postgresql-16  # enable postgresql
+sudo systemctl start postgresql-16  # start PostgreSQL service
+sudo systemctl status postgresql-16  # verify
+
+```
+
+
+Gå ind i PostgreSQL:
+```
+sudo -i -u postgres
+psql
+```
+
+Byg database og bruger:
+
+
+```
+postgres=# CREATE DATABASE arduino_data;
+CREATE DATABASE
+postgres=# CREATE USER arduino_user WITH ENCRYPTED PASSWORD 'Kode1234!';
+CREATE ROLE
+postgres=# GRANT ALL PRIVILEGES ON DATABASE arduino_data TO arduino_user;
+GRANT
+postgres=# \q
+```
+
+DB: arduino_data
+DBUSER: arduino_user
+DBUSER PASSWORD: Kode1234!
+
+Følgende del i brackets {} viste sig ikke at være nødvendig, da jeg i sidste ende valgte at oprette en producer på min egen computer (PC) og sende den til mit linux-environment (VM). Dvs. at der ikke er behov for at uploade kode til arduinoen fra VM, og intet behov for at lytte til min egen computers COM4-port fra VM:
+
+{
+
+Hent git, så vi kan fetch external libraries
+`sudo dnf install -y wget git`
+
+Installer FUSE, da man ellers vil møde en fejl, når man forsøger at åbne Arduino IDE
+sudo dnf install -y fuse fuse-libs
+
+Hent og installer Arduino IDE
+`wget https://downloads.arduino.cc/arduino-ide/arduino-ide_latest_Linux_64bit.AppImage`
+`chmod +x arduino-ide_latest_Linux_64bit.AppImage`
+
+Åbn Arduino IDE
+`./arduino-ide_latest_Linux_64bit.AppImage`
+}
+
+NAT til Bridged Adapter var alligevel nyttigt, for at kunne discover min VM på PCs netværk.
+
+For kommunikation mellem computer og Linux environment:
+VM -> Settings -> Network -> Ændr fra 'NAT' til 'Bridged Adapter', således at VMaskinen "dukker op" og bliver kontaktbar over netværket. 
+
+Har på Linux VM opdateret 'advertised.listeners' i `server.properties` til: `advertised.listeners=PLAINTEXT://<VM_IP>:9092,CONTROLLER://<VM_IP>:9093`, således at det bliver muligt at streame data fra PC til Linux VM via Kafka.
+
+Åbn port 9092 på Linux vm:
+
+```
+sascha@localhost:~$ sudo firewall-cmd --add-port=9092/tcp --permanent
+success
+sascha@localhost:~$ sudo firewall-cmd --reload
+success
+sascha@localhost:~$ sudo firewall-cmd --list-ports
+9092/tcp
+```
+
+Agenda 31/10/2025
+
+Byg Arduino, læs lydniveau
+Opsæt producer i Python
+
+Agenda 03/11/2025
+
+Indfør distance og flere data (timestamp f.eks.)
+
+Opret rigtig database, modtag data via broker
+
+
+Send data til broker -> db
+Send data til broker -> consumer (dashboard)
+
+Datavisualisering
