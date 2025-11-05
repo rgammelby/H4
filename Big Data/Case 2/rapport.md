@@ -204,11 +204,11 @@ sudo firewall-cmd --reload  # reload to ensure port is added
 sudo firewall-cmd --list-ports  # list to verify
 ```
 
-Herfra køres alt over producer/consumer scripts, som kan ses/hentes fra vores [Github](WWW.INDSÆT.LINK).
+Herfra køres alt over producer/consumer scripts, som kan ses/hentes fra vores [Github](https://github.com/rgammelby/H4/tree/main/Big%20Data/Case%202).
 
 ## Producer
 
-For at kunne sende data fra Arduinoen, skal de sendes via producer. Scripts kan findes på vores [Github](WWW.INDSÆT.LINK).
+For at kunne sende data fra Arduinoen, skal de sendes via producer. Scripts kan findes på vores [Github](https://github.com/rgammelby/H4/tree/main/Big%20Data/Case%202).
 
 ## Consumers
 
@@ -269,5 +269,9 @@ Udover de små hik, har alt generelt kørt godt på den virtuelle Linux-maskine.
 
 # Scripts
 
+For at kunne køre vedhæftede scripts på din maskine, skal der installeres en række eksterne python libraries:
+
 Pip installs:
 `pandas, plotly, dash, psycopg2-binary, kafka, serial`
+
+Vores scripts kan findes på vores [Github](https://github.com/rgammelby/H4/tree/main/Big%20Data/Case%202).
