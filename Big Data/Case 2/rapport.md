@@ -220,8 +220,24 @@ Disse findes i Python scripts, og eksekveres ved hhv:
 python database_consumer.py
 python dashboard_consumer.py
 ```
+## Data pipeline
 
-# Dashboards
+```
+Arduino 
+   ↓                 
+Serial USB → Producer → Kafka → Database (PostgreSQL) → Analysis_ Dashboard (Batch)
+
+                              → Live_ Dashboard (Streaming)                  
+                          
+```
+
+## Data Behandling
+
+Sensor data sendes løbende til Kafka og vises med det sammen på live dashboardet, og gør det muligt at overvåge live støjniveauer.
+
+Alle events gemmes samtidig i PostgreSQL, som bliver analyseres på danshboard senere. På denne måde kan man få overblik over fx hvilke tidsrum der har højere støjniveauer, og det hjælper med at identificere tendenser og opdage mønstre over tid.
+
+# Dashboards og data Præsentation
 
 For at kunne analysere, visualisere og bruge vores indsamlede data, har hver af os bygget et dashboard. 
 
@@ -234,6 +250,8 @@ Mit eget dashboard fokuserer mere på brud på det valgte threshold (1000).
 ![alt text](image-1.png)
 
 Begge dashboards giver dog et overblik, samt brugbare data, som kan hjælpe os med at danne en konklusion.
+
+Vi har vælget at bruge Plotly, fordi detunderstøtter både real-time opdatering og historiske grafer. Plotly kan læse data direktefra PostgreSQL, og kan vise live data, som kommer fra Kafka-strømmen. og understøtter live updates. 
 
 # GDPR
 Arduinoens sensor opfanger udelukkende lydniveau, og intet af lydens indhold. Dvs., at de eneste data, som reelt behandles, er tal. Data håndteres af Kafka, og føres til to ”endpoints”; en PostgreSQL database, og et datavisualiserings-dashboard.
